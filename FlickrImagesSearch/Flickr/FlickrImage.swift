@@ -8,12 +8,12 @@
 
 import UIKit
 
-struct FlickrImage {
-    let path: URL
-    let description: String
-    let uiImage: UIImage?
+public struct FlickrImage {
+    public let path: URL
+    public let description: String
+    public let uiImage: UIImage?
     
-    func with(uiImage: UIImage) -> FlickrImage {
+    public func with(uiImage: UIImage) -> FlickrImage {
         return FlickrImage(path: path,
                            description: description,
                            uiImage: uiImage)

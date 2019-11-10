@@ -8,13 +8,15 @@
 
 import UIKit
 
-protocol FlickrPaginationServiceProtocol {
+public protocol FlickrPaginationServiceProtocol: class {
+    
+    var delegate: FlickrPaginationServiceDelegate? { get set }
     
     func loadFirstPage(by searchString: String)
     func loadNextPage() -> Bool
 }
 
-protocol FlickrPaginationServiceDelegate: class {
+public protocol FlickrPaginationServiceDelegate: class {
     
     func flickrPaginationService(_ service: FlickrPaginationServiceProtocol,
                                  didLoad images: [FlickrImage],
