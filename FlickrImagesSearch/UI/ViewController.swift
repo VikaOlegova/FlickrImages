@@ -86,11 +86,11 @@ extension ViewController: UISearchResultsUpdating {
     func updateSearchResults (for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         let currentText = searchBar.text!
+        searchWorkItem.cancel()
         if currentText.isEmpty {
             presenter.resetSearch()
             return
         }
-        searchWorkItem.cancel()
         searchWorkItem = DispatchWorkItem(block: { [weak self] in
             print("search \(currentText)")
             self?.presenter.loadFirstPage(searchString: currentText)
