@@ -30,7 +30,6 @@ class FlickrPaginationService: FlickrPaginationServiceProtocol {
     
     private(set) var isLoadingNextPage = false
     private(set) var nextPage = 1
-    private(set) var images = [FlickrImage]()
     private(set) var searchString: String? = nil
     
     private let flickrService: FlickrServiceProtocol
