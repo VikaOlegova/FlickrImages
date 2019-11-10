@@ -1,6 +1,6 @@
 //
-//  API.swift
-//  UrlSessionLesson
+//  FlickrAPI.swift
+//  FlickrImagesSearch
 //
 //  Created by Вика on 06/11/2019.
 //  Copyright © 2019 Vika Olegova. All rights reserved.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class API {
+class FlickrAPI {
 
 	private static let apiKey = "dab4052df3cc23ed39745a8cca163e0a"
 	private static let baseUrl = "https://www.flickr.com/services/rest/"

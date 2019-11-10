@@ -1,6 +1,6 @@
 //
 //  FlickrPaginationService.swift
-//  UrlSessionLesson
+//  FlickrImagesSearch
 //
 //  Created by Вика on 10/11/2019.
 //  Copyright © 2019 Vika Olegova. All rights reserved.
@@ -8,27 +8,17 @@
 
 import UIKit
 
-struct FlickrImage {
-    let path: String
-    let description: String
-    let uiImage: UIImage?
-    
-    func with(uiImage: UIImage) -> FlickrImage {
-        return FlickrImage(path: path,
-                           description: description,
-                           uiImage: uiImage)
-    }
-}
-
 protocol FlickrPaginationServiceProtocol {
+    
     func loadFirstPage(by searchString: String)
     func loadNextPage() -> Bool
 }
 
 protocol FlickrPaginationServiceDelegate: class {
+    
     func flickrPaginationService(_ service: FlickrPaginationServiceProtocol,
                                  didLoad images: [FlickrImage],
-                                 page: Int)
+                                 on page: Int)
 }
 
 class FlickrPaginationService: FlickrPaginationServiceProtocol {
@@ -65,36 +55,14 @@ class FlickrPaginationService: FlickrPaginationServiceProtocol {
         
         flickrService.loadImageList(searchString: searchString,
                                     perPage: pageSize,
-                                    page: nextPage) { [weak self, nextPage] images in
-                                        self?.loadUIImages(for: images, page: nextPage)
+                                    page: nextPage) { [page = nextPage, flickrService] in
+            flickrService.loadUIImages(for: $0,
+                                       page: page,
+                                       completion: { [weak self] in
+                guard let self = self else { return }
+                self.delegate?.flickrPaginationService(self, didLoad: $0, on: page)
+            })
         }
-        
         return true
-    }
-    
-    private func loadUIImages(for images: [FlickrImage], page: Int) {
-        let group = DispatchGroup()
-        var newImages: [FlickrImage] = []
-        for model in images {
-            group.enter()
-            flickrService.loadImage(at: model.path) { [weak self] image in
-                defer {
-                    group.leave()
-                }
-                guard let image = image else {
-                    print("Image not loaded")
-                    return
-                }
-                let result = model.with(uiImage: image)
-                newImages.append(result)
-            }
-            
-        }
-        
-        group.notify(queue: DispatchQueue.main) {
-            self.nextPage = page + 1
-            self.delegate?.flickrPaginationService(self, didLoad: newImages, page: page)
-            self.isLoadingNextPage = false
-        }
     }
 }
