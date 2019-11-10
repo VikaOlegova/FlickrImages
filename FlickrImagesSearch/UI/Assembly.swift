@@ -7,14 +7,12 @@
 //
 
 import UIKit
+import Flickr
 
 class Assembly {
     
     func createModule() -> UIViewController {
-        let networkService = NetworkService()
-        let flickrService = FlickrService(networkService: networkService)
-        let flickrPaginationService = FlickrPaginationService(flickrService: flickrService,
-                                                              pageSize: 20)
+        let flickrPaginationService = Flickr.createPaginationService(pageSize: 20)
         
         let presenter = Presenter(flickrService: flickrPaginationService)
         let viewController = ViewController(presenter: presenter)

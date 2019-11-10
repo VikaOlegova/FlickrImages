@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Flickr
 
 protocol PresenterInput {
     
