@@ -19,6 +19,8 @@ class ViewController: UIViewController {
     let spinner = UIActivityIndicatorView(style: .gray)
     let emptyFooter = UIView()
     
+    var searchWorkItem = DispatchWorkItem(block: { })
+    
     init(presenter: PresenterInput) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -88,12 +90,12 @@ extension ViewController: UISearchResultsUpdating {
             presenter.resetSearch()
             return
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            if currentText != searchBar.text! {
-                return
-            }
-            self.presenter.loadFirstPage(searchString: currentText)
-        }
+        searchWorkItem.cancel()
+        searchWorkItem = DispatchWorkItem(block: { [weak self] in
+            print("search \(currentText)")
+            self?.presenter.loadFirstPage(searchString: currentText)
+        })
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: searchWorkItem)
     }
 }
 
