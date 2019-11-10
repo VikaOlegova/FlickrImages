@@ -64,6 +64,8 @@ extension ViewController: PresenterOutput {
         if firstPage {
             self.images = images
             tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .automatic)
+            tableView.setContentOffset(CGPoint(x: 0, y: -tableView.adjustedContentInset.top),
+                                       animated: true)
         } else {
             let indexes = self.images.count..<self.images.count+images.count
             self.images += images
