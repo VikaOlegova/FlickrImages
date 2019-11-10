@@ -18,7 +18,8 @@ protocol FlickrPaginationServiceDelegate: class {
     
     func flickrPaginationService(_ service: FlickrPaginationServiceProtocol,
                                  didLoad images: [FlickrImage],
-                                 on page: Int)
+                                 on page: Int,
+                                 by searchString: String)
 }
 
 class FlickrPaginationService: FlickrPaginationServiceProtocol {
@@ -53,14 +54,21 @@ class FlickrPaginationService: FlickrPaginationServiceProtocol {
         
         isLoadingNextPage = true
         
+        let page = nextPage
+        nextPage += 1
+        
         flickrService.loadImageList(searchString: searchString,
                                     perPage: pageSize,
-                                    page: nextPage) { [page = nextPage, flickrService] in
+                                    page: page) { [searchString, flickrService] in
             flickrService.loadUIImages(for: $0,
                                        page: page,
                                        completion: { [weak self] in
                 guard let self = self else { return }
-                self.delegate?.flickrPaginationService(self, didLoad: $0, on: page)
+                self.delegate?.flickrPaginationService(self,
+                                                       didLoad: $0,
+                                                       on: page,
+                                                       by: searchString)
+                self.isLoadingNextPage = false
             })
         }
         return true
