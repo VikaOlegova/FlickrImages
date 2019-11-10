@@ -12,10 +12,12 @@ protocol PresenterInput {
     
     func loadFirstPage(searchString: String)
     func loadNextPage()
+    func resetSearch()
 }
 
 protocol PresenterOutput: class {
     
+    func showLoadingIndicator(_ show: Bool)
     func show(images: [ImageViewModel], firstPage: Bool)
 }
 
@@ -37,11 +39,22 @@ class Presenter: PresenterInput {
     
     func loadFirstPage(searchString: String) {
         self.searchString = searchString
+        
+        guard !searchString.isEmpty else { return }
+        
         flickrService.loadFirstPage(by: searchString)
+        view?.showLoadingIndicator(true)
     }
     
     func loadNextPage() {
-        _ = flickrService.loadNextPage()
+        guard flickrService.loadNextPage() else { return }
+        view?.showLoadingIndicator(true)
+    }
+    
+    func resetSearch() {
+        searchString = ""
+        view?.show(images: [], firstPage: true)
+        view?.showLoadingIndicator(false)
     }
 }
 

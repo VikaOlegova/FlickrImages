@@ -16,6 +16,9 @@ class ViewController: UIViewController {
     let presenter: PresenterInput
     let searchController = UISearchController(searchResultsController: nil)
     
+    let spinner = UIActivityIndicatorView(style: .gray)
+    let emptyFooter = UIView()
+    
     init(presenter: PresenterInput) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -39,6 +42,9 @@ class ViewController: UIViewController {
         tableView.dataSource = self
         tableView.keyboardDismissMode = .onDrag
         
+        spinner.frame = CGRect(x: 0, y: 0, width: 0, height: 44)
+        showLoadingIndicator(false)
+        
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search images"
@@ -53,9 +59,21 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: PresenterOutput {
+    
     func show(images: [ImageViewModel], firstPage: Bool) {
-        self.images = firstPage ? images : self.images + images
-        tableView.reloadData()
+        if firstPage {
+            self.images = images
+            tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .automatic)
+        } else {
+            let indexes = self.images.count..<self.images.count+images.count
+            self.images += images
+            tableView.insertRows(at: indexes.map { IndexPath(row: $0, section: 0) }, with: .automatic)
+        }
+    }
+    
+    func showLoadingIndicator(_ show: Bool) {
+        tableView.tableFooterView = show ? spinner : emptyFooter
+        spinner.startAnimating()
     }
 }
 
@@ -64,8 +82,8 @@ extension ViewController: UISearchResultsUpdating {
     func updateSearchResults (for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         let currentText = searchBar.text!
-        if (currentText == "") {
-            clearTable()
+        if currentText.isEmpty {
+            presenter.resetSearch()
             return
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -74,11 +92,6 @@ extension ViewController: UISearchResultsUpdating {
             }
             self.presenter.loadFirstPage(searchString: currentText)
         }
-    }
-    
-    func clearTable() {
-        images.removeAll()
-        tableView.reloadData()
     }
 }
 
