@@ -71,5 +71,6 @@ extension Presenter: FlickrPaginationServiceDelegate {
             return ImageViewModel(description: $0.description, image: uiImage)
         }
         view?.show(images: viewModels, firstPage: page == 1)
+        view?.showLoadingIndicator(false)
     }
 }

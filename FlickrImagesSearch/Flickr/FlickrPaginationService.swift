@@ -63,11 +63,11 @@ class FlickrPaginationService: FlickrPaginationServiceProtocol {
                                        page: page,
                                        completion: { [weak self] in
                 guard let self = self else { return }
+                self.isLoadingNextPage = false
                 self.delegate?.flickrPaginationService(self,
                                                        didLoad: $0,
                                                        on: page,
                                                        by: searchString)
-                self.isLoadingNextPage = false
             })
         }
         return true
